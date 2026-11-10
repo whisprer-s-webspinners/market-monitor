@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Market Monitor</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="mast shell">
+    <div class="brand"><img src="/icon.svg" width="40" height="40" alt=""><div><h1>Market Monitor</h1><p>Local market dashboard</p></div></div>
+    <div class="mast-right"><time id="clock" class="mono"></time><button id="refresh" class="outline" type="button">Check for updates</button></div>
+  </header>
+  <main class="shell">
+    <div id="demo" class="banner demo" hidden>DEMO MODE · All prices and model results here are fictional.</div>
+    <div class="banner feed" aria-live="polite"><span id="feed-dot" class="dot"></span><strong>Yahoo Finance</strong><span id="feed-status">Connecting to the local app…</span></div>
+    <div class="workspace">
+      <aside class="panel watch">
+        <header class="section-head"><div><span class="kicker">MARKET WATCH</span><h2>Watchlist</h2></div><span class="pill">USD &amp; local units</span></header>
+        <div id="watchlist"></div>
+        <p class="watch-note">Changes are versus the prior available daily close. Quote times are in your browser’s time zone. Yahoo market data may be delayed.</p>
+      </aside>
+      <div class="main-stack">
+        <section class="panel market" aria-labelledby="asset-name">
+          <div class="toolbar">
+            <div id="modes" class="seg" aria-label="Chart view">
+              <button type="button" data-mode="chart" aria-pressed="true">Market chart</button>
+              <button type="button" data-mode="compare" aria-pressed="false">Compare returns</button>
+            </div>
+            <div id="ranges" class="seg range" aria-label="Lookback">
+              <button type="button" data-range="1h" aria-pressed="false">1H</button>
+              <button type="button" data-range="1d" aria-pressed="true">1D</button>
+              <button type="button" data-range="1w" aria-pressed="false">1W</button>
+              <button type="button" data-range="1mo" aria-pressed="false">1M</button>
+              <button type="button" data-range="6mo" aria-pressed="false">6M</button>
+              <button type="button" data-range="ytd" aria-pressed="false">YTD</button>
+            </div>
+          </div>
+          <div class="hero">
+            <div><span id="symbol" class="kicker">BTC-USD</span><h2 id="asset-name">Bitcoin</h2><p id="asset-note">24/7 crypto reference</p></div>
+            <div class="hero-value"><strong id="quote" class="mono">—</strong><span id="quote-time"></span></div>
+          </div>
+          <div id="compare-picker" class="compare-picker" hidden></div>
+          <div class="chart-tools">
+            <div id="chart-key" class="chart-key"></div>
+            <button id="style-toggle" type="button" class="outline small" aria-pressed="false">Use line</button>
+          </div>
+          <div id="chart" class="chart" tabindex="0" aria-label="Price chart. Use Left and Right arrows to inspect data.">
+            <div class="placeholder">Loading the first chart…</div>
+          </div>
+          <p id="chart-foot" class="chart-foot"></p>
+        </section>
+        <section class="panel risk" aria-labelledby="risk-title">
+          <header class="section-head">
+            <div><span class="kicker">KRAKEN PROP STARTER · MANUAL SNAPSHOT</span><h2 id="risk-title">Evaluation buffer</h2></div>
+            <a class="outline small" href="https://support.kraken.com/articles/how-kraken-prop-evaluations-work" target="_blank" rel="noopener noreferrer">Kraken rules ↗</a>
+          </header>
+          <p>Enter the current <strong>Equity</strong> and <strong>Max Daily Loss limit</strong> from Kraken. This snapshot is saved in this browser and does not track your account automatically.</p>
+          <form id="risk-form">
+            <label>Equity (USD)<input id="equity" type="number" inputmode="decimal" step="0.01" min="0" max="1000000000" placeholder="From Kraken" required></label>
+            <label>Daily floor (USD)<input id="floor" type="number" inputmode="decimal" step="0.01" min="0" max="1000000000" placeholder="From Kraken" required></label>
+            <button type="submit" class="accent">Save snapshot</button>
+            <button id="clear-risk" type="button" class="outline" hidden>Clear</button>
+          </form>
+          <div class="risk-values">
+            <div><span>Above daily floor</span><strong id="head-daily">—</strong></div>
+            <div><span>Above $4,700 total floor</span><strong id="head-total">—</strong></div>
+            <div><span>To $5,500 equity target</span><strong id="head-target">—</strong></div>
+          </div>
+          <p id="risk-status" class="risk-status" role="status"></p>
+        </section>
+        <section id="scenario-panel" class="panel scenario" aria-labelledby="scenario-title">
+          <header class="section-head"><div><span class="kicker">HISTORICAL RETURN MODEL</span><h2 id="scenario-title">What similar moves looked like</h2></div><span class="pill">Daily closes</span></header>
+          <p id="scenario-sub">Loading completed daily closes…</p>
+          <div id="scenario-result" hidden>
+            <div class="scenario-layout">
+              <div id="scenario-chart" class="scenario-chart"></div>
+              <div id="scenario-values" class="scenario-values"></div>
+            </div>
+            <p id="benchmark" class="watch-note"></p>
+            <details>
+              <summary>How the model works</summary>
+              <p>For each horizon, this takes overlapping past returns from up to 121 completed daily closes and plots their 10th, 50th and 90th percentiles. Today’s bar is excluded. The shaded band describes the sample. Future moves can be outside it, and the overlapping returns are not independent. Steps are daily bars, so 5 steps can span a week for an equity index or 5 days for crypto.</p>
+              <p>The 5-bar benchmark compares historical absolute error against a zero-change estimate. Each test only uses data available at that point. No position or leverage data enters the model.</p>
+            </details>
+          </div>
+        </section>
+      </div>
+    </div>
+    <footer>Market references via yfinance · Kraken Pro is the source for account marks, exposure and limits.</footer>
+  </main>
+</body>
+</html>
